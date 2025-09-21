@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Student Complaint System</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+</head>
+<body class="dashboard-body">
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-container">
+            <div class="logo">
+                <span class="logo-icon">🎓</span>
+                <h1>StudyComplaint</h1>
+            </div>
+            <nav class="dashboard-nav">
+                <ul class="nav-list">
+                    <li><a href="#dashboard" class="nav-link active">📊 Dashboard</a></li>
+                    <li><a href="#" class="nav-link" data-modal="complaintModal">📝 New Complaint</a></li>
+                    <li><a href="#complaints" class="nav-link">📋 My Complaints</a></li>
+                    <li><a href="/student/profile" class="nav-link">👤 Profile</a></li>
+                    <li><a href="#" class="nav-link logout-btn" onclick="logout()">🚪 Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <!-- Welcome Section -->
+        <section class="welcome-section">
+            <div class="container">
+                <div class="welcome-content">
+                    <h1>Welcome back, <span id="studentName">Student</span>! 👋</h1>
+                    <p>Track your complaints, submit new ones, and stay updated on their progress.</p>
+                </div>
+                <div class="quick-actions">
+                    <button class="btn btn-primary" data-modal="complaintModal">
+                        <span>➕</span> File New Complaint
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="dashboard-stats">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-content">
+                            <h3 id="totalComplaints">0</h3>
+                            <p>Total Complaints</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⏳</div>
+                        <div class="stat-content">
+                            <h3 id="pendingComplaints">0</h3>
+                            <p>Pending</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-content">
+                            <h3 id="resolvedComplaints">0</h3>
+                            <p>Resolved</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🔄</div>
+                        <div class="stat-content">
+                            <h3 id="inProgressComplaints">0</h3>
+                            <p>In Progress</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Complaints Section -->
+        <section id="complaints" class="recent-complaints">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Recent Complaints</h2>
+                    <button class="btn btn-secondary" onclick="refreshComplaints()">🔄 Refresh</button>
+                </div>
+                <div class="complaints-container">
+                    <div id="complaintsGrid" class="complaints-grid">
+                        <!-- Complaints will be loaded here -->
+                        <div class="no-complaints">
+                            <div class="no-complaints-icon">📝</div>
+                            <h3>No complaints yet</h3>
+                            <p>Start by filing your first complaint using the button above.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="dashboard-footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2024 Student Complaint System. Your voice matters.</p>
+                <div class="footer-links">
+                    <a href="#">Help</a>
+                    <a href="#">Privacy</a>
+                    <a href="#">Terms</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- New Complaint Modal -->
+    <div id="complaintModal" class="modal">
+        <div class="modal-content large-modal">
+            <div class="modal-header">
+                <h2>📝 File New Complaint</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="complaintForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="complaintTitle">Complaint Title *</label>
+                            <input type="text" id="complaintTitle" name="title" required 
+                                   placeholder="Brief title for your complaint">
+                        </div>
+                        <div class="form-group">
+                            <label for="complaintCategory">Category *</label>
+                            <select id="complaintCategory" name="category" required>
+                                <option value="">Select a category</option>
+                                <option value="academic">Academic Issues</option>
+                                <option value="facilities">Facilities & Infrastructure</option>
+                                <option value="harassment">Harassment & Bullying</option>
+                                <option value="administrative">Administrative Issues</option>
+                                <option value="technical">Technical Problems</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="complaintDescription">Description *</label>
+                        <textarea id="complaintDescription" name="description" required 
+                                  placeholder="Provide detailed information about your complaint..."
+                                  rows="6"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="complaintPriority">Priority Level</label>
+                            <select id="complaintPriority" name="priority">
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                                <option value="urgent">Urgent</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="isAnonymous">
+                                <input type="checkbox" id="isAnonymous" name="anonymous">
+                                Submit anonymously
+                            </label>
+                            <small>Your identity will be protected</small>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('complaintModal')">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Submit Complaint</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Complaint Details Modal -->
+    <div id="complaintDetailsModal" class="modal">
+        <div class="modal-content large-modal">
+            <div class="modal-header">
+                <h2>📋 Complaint Details</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="complaintDetails">
+                    <!-- Complaint details will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/dashboard.js}"></script>
+</body>
+</html>

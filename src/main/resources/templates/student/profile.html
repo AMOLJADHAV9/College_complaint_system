@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile - Student Complaint System</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/profile.css}">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+</head>
+<body class="dashboard-body">
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-container">
+            <div class="logo">
+                <span class="logo-icon">🎓</span>
+                <h1>StudyComplaint</h1>
+            </div>
+            <nav class="dashboard-nav">
+                <ul class="nav-list">
+                    <li><a href="/student/dashboard" class="nav-link">📊 Dashboard</a></li>
+                    <li><a href="#" class="nav-link" data-modal="complaintModal">📝 New Complaint</a></li>
+                    <li><a href="/student/dashboard#complaints" class="nav-link">📋 My Complaints</a></li>
+                    <li><a href="/student/profile" class="nav-link active">👤 Profile</a></li>
+                    <li><a href="#" class="nav-link logout-btn" onclick="logout()">🚪 Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <!-- Profile Header -->
+        <section class="profile-header">
+            <div class="container">
+                <div class="profile-header-content">
+                    <div class="profile-avatar">
+                        <div class="avatar-circle">
+                            <span id="avatarInitials">S</span>
+                        </div>
+                        <button class="btn btn-secondary btn-small" onclick="changeAvatar()">Change Avatar</button>
+                    </div>
+                    <div class="profile-info">
+                        <h1 id="profileName">Student Name</h1>
+                        <p id="profileEmail">student@example.com</p>
+                        <p class="profile-role">🎓 Student</p>
+                        <div class="profile-stats">
+                            <div class="stat">
+                                <span class="stat-number" id="profileTotalComplaints">0</span>
+                                <span class="stat-label">Total Complaints</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-number" id="profileResolvedComplaints">0</span>
+                                <span class="stat-label">Resolved</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-number" id="profileMemberSince">2024</span>
+                                <span class="stat-label">Member Since</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile Content -->
+        <section class="profile-content">
+            <div class="container">
+                <div class="profile-grid">
+                    <!-- Personal Information -->
+                    <div class="profile-card">
+                        <div class="card-header">
+                            <h2>👤 Personal Information</h2>
+                            <button class="btn btn-secondary btn-small" onclick="editPersonalInfo()">Edit</button>
+                        </div>
+                        <div class="card-content">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <label>Full Name</label>
+                                    <span id="infoFullName">Loading...</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Email Address</label>
+                                    <span id="infoEmail">Loading...</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Student ID</label>
+                                    <span id="infoStudentId">Loading...</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Phone Number</label>
+                                    <span id="infoPhone">Not provided</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Department</label>
+                                    <span id="infoDepartment">Not specified</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Year of Study</label>
+                                    <span id="infoYear">Not specified</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Account Settings -->
+                    <div class="profile-card">
+                        <div class="card-header">
+                            <h2>⚙️ Account Settings</h2>
+                        </div>
+                        <div class="card-content">
+                            <div class="settings-list">
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>🔔 Email Notifications</h4>
+                                        <p>Receive updates about your complaints via email</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="emailNotifications" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>📱 SMS Notifications</h4>
+                                        <p>Get instant notifications on your phone</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="smsNotifications">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="setting-item">
+                                    <div class="setting-info">
+                                        <h4>🔒 Privacy Mode</h4>
+                                        <p>Make all complaints anonymous by default</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="privacyMode">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security -->
+                    <div class="profile-card">
+                        <div class="card-header">
+                            <h2>🔐 Security</h2>
+                        </div>
+                        <div class="card-content">
+                            <div class="security-actions">
+                                <button class="btn btn-primary full-width" onclick="changePassword()">
+                                    🔑 Change Password
+                                </button>
+                                <button class="btn btn-secondary full-width" onclick="downloadData()">
+                                    📥 Download My Data
+                                </button>
+                                <button class="btn btn-danger full-width" onclick="deleteAccount()">
+                                    🗑️ Delete Account
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="profile-card activity-card">
+                        <div class="card-header">
+                            <h2>📈 Recent Activity</h2>
+                            <button class="btn btn-secondary btn-small" onclick="refreshActivity()">Refresh</button>
+                        </div>
+                        <div class="card-content">
+                            <div id="recentActivity" class="activity-list">
+                                <!-- Activity items will be loaded here -->
+                                <div class="activity-loading">
+                                    <div class="loading"></div>
+                                    Loading recent activity...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="dashboard-footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2024 Student Complaint System. Your privacy is protected.</p>
+                <div class="footer-links">
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Help</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Edit Personal Info Modal -->
+    <div id="editInfoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>✏️ Edit Personal Information</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="editInfoForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editFullName">Full Name</label>
+                            <input type="text" id="editFullName" name="fullName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editStudentId">Student ID</label>
+                            <input type="text" id="editStudentId" name="studentId">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editPhone">Phone Number</label>
+                            <input type="tel" id="editPhone" name="phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="editDepartment">Department</label>
+                            <select id="editDepartment" name="department">
+                                <option value="">Select Department</option>
+                                <option value="computer-science">Computer Science</option>
+                                <option value="engineering">Engineering</option>
+                                <option value="business">Business</option>
+                                <option value="arts">Arts & Humanities</option>
+                                <option value="science">Science</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editYear">Year of Study</label>
+                        <select id="editYear" name="year">
+                            <option value="">Select Year</option>
+                            <option value="1">First Year</option>
+                            <option value="2">Second Year</option>
+                            <option value="3">Third Year</option>
+                            <option value="4">Fourth Year</option>
+                            <option value="graduate">Graduate</option>
+                        </select>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('editInfoModal')">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🔑 Change Password</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="changePasswordForm">
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password</label>
+                        <input type="password" id="currentPassword" name="currentPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" id="newPassword" name="newPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmNewPassword">Confirm New Password</label>
+                        <input type="password" id="confirmNewPassword" name="confirmNewPassword" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('changePasswordModal')">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Update Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/main.js}"></script>
+    <script th:src="@{/js/dashboard.js}"></script>
+    <script th:src="@{/js/profile.js}"></script>
+</body>
+</html>
