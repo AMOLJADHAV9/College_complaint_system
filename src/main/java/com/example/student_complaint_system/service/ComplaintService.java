@@ -46,4 +46,23 @@ public class ComplaintService {
     public long getComplaintCountByStatus(Complaint.ComplaintStatus status) {
         return complaintRepository.countByStatus(status);
     }
+
+    public Complaint updateComplaintStatus(String complaintId, Complaint.ComplaintStatus newStatus, String adminResponse) {
+        Optional<Complaint> optionalComplaint = complaintRepository.findById(complaintId);
+        if (optionalComplaint.isPresent()) {
+            Complaint complaint = optionalComplaint.get();
+            complaint.setStatus(newStatus);
+            
+            // Set resolution date if complaint is being resolved or rejected
+            if (newStatus == Complaint.ComplaintStatus.RESOLVED || newStatus == Complaint.ComplaintStatus.REJECTED) {
+                complaint.setResolutionDate(LocalDateTime.now());
+            }
+            
+            // Add admin response
+            complaint.setAdminResponse(adminResponse);
+            
+            return complaintRepository.save(complaint);
+        }
+        throw new RuntimeException("Complaint not found with id: " + complaintId);
+    }
 }

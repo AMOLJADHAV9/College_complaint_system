@@ -69,4 +69,40 @@ public class AdminController {
                 .map(complaint -> ResponseEntity.ok(ComplaintResponseDTO.fromComplaint(complaint)))
                 .orElse(ResponseEntity.notFound().build());
     }
+    
+    // Add endpoint to update complaint status
+    @PutMapping("/complaints/{id}/status")
+    public ResponseEntity<?> updateComplaintStatus(
+            @PathVariable String id,
+            @RequestBody Map<String, String> requestBody,
+            @AuthenticationPrincipal User admin) {
+        // Check if user is admin
+        if (admin.getRole() != User.UserRole.ADMIN) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("message", "Access denied. Admin role required."));
+        }
+        
+        try {
+            String statusStr = requestBody.get("status");
+            String adminResponse = requestBody.get("adminResponse");
+            
+            if (statusStr == null) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Status is required"));
+            }
+            
+            Complaint.ComplaintStatus newStatus;
+            try {
+                newStatus = Complaint.ComplaintStatus.valueOf(statusStr);
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Invalid status value"));
+            }
+            
+            Complaint updatedComplaint = complaintService.updateComplaintStatus(id, newStatus, adminResponse);
+            return ResponseEntity.ok(ComplaintResponseDTO.fromComplaint(updatedComplaint));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Failed to update complaint status: " + e.getMessage()));
+        }
+    }
 }

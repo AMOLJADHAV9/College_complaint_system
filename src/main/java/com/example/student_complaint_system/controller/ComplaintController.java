@@ -36,7 +36,7 @@ public class ComplaintController {
                     .body("Failed to submit complaint: " + e.getMessage());
         }
     }
-
+           
     @GetMapping("/my")
     public ResponseEntity<List<Complaint>> getMyComplaints(@AuthenticationPrincipal User authenticatedUser) {
         logger.info("Getting complaints for user: {} with ID: {}", 
@@ -44,8 +44,7 @@ public class ComplaintController {
         
         List<Complaint> complaints = complaintService.getComplaintsByStudent(authenticatedUser);
         
-        logger.info("Found {} complaints for user {}", complaints.size(), authenticatedUser.getUsername());
-        
+          
         return ResponseEntity.ok(complaints);
     }
 
